@@ -1,0 +1,24 @@
+name: test
+on:
+  push:
+    branches:
+      - "*-tempfix"
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.2', '8.2']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: redis
+
+      - name: Install redis
+        run: sudo apt-get install -y redis-server
+
+      - run: composer install --no-progress
+      - run: vendor/bin/phpunit --testdox
